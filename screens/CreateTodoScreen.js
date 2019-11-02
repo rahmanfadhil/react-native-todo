@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import {
   Provider as PaperProvider,
   Appbar,
   TextInput,
-  Button
+  Button,
+  Checkbox
 } from "react-native-paper";
 import axios from "axios";
 
 export default function CreateTodoScreen(props) {
-  const [todo, setTodo] = useState();
+  const [todo, setTodo] = useState("");
+  const [completed, setCompleted] = useState(false);
 
   return (
     <PaperProvider>
@@ -26,6 +28,20 @@ export default function CreateTodoScreen(props) {
           value={todo}
           onChangeText={text => setTodo(text)}
         />
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: 15
+          }}
+        >
+          <Checkbox
+            status={completed ? "checked" : "unchecked"}
+            onPress={() => setCompleted(!completed)}
+          />
+          <Text>Completed</Text>
+        </View>
         <Button
           style={{ marginTop: 15 }}
           mode="contained"
@@ -33,7 +49,7 @@ export default function CreateTodoScreen(props) {
             axios
               .post("https://ancient-reaches-80096.herokuapp.com/todos/", {
                 title: todo,
-                completed: false
+                completed: completed
               })
               .then(data => {
                 props.navigation.goBack();
