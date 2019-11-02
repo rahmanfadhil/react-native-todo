@@ -28,21 +28,12 @@ export default function App() {
         renderItem={({ item }) => (
           <List.Item
             onPress={() => {
-              fetch(
-                `https://ancient-reaches-80096.herokuapp.com/todos/${item.id}/`,
-                {
-                  method: "PATCH",
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify({ completed: !item.completed })
-                }
-              )
-                .then(response => response.json())
-                .then(data => {
-                  fetchTodos();
-                });
+              axios
+                .patch(
+                  `https://ancient-reaches-80096.herokuapp.com/todos/${item.id}/`,
+                  { completed: !item.completed }
+                )
+                .then(data => fetchTodos());
             }}
             title={item.title}
             left={props => (
