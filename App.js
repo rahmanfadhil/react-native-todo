@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { Provider as PaperProvider, Appbar, List } from "react-native-paper";
+import axios from "axios";
 
 export default function App() {
   const [todos, setTodos] = useState([]);
 
+  async function fetchTodos() {
+    const data = await axios.get(
+      "https://ancient-reaches-80096.herokuapp.com/todos/"
+    );
+    setTodos(data.data);
+  }
+
   useEffect(() => {
-    fetch("https://ancient-reaches-80096.herokuapp.com/todos/")
-      .then(response => response.json())
-      .then(data => setTodos(data));
+    fetchTodos();
   }, []);
 
   return (
