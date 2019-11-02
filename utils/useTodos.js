@@ -21,5 +21,11 @@ export default function useTodos() {
       .then(data => fetchTodos());
   }
 
-  return { todos, fetchTodos, toggleTodo };
+  function deleteTodo(id) {
+    axios
+      .delete(`https://ancient-reaches-80096.herokuapp.com/todos/${id}/`)
+      .then(data => fetchTodos());
+  }
+
+  return { todos, fetchTodos, toggleTodo, deleteTodo };
 }
