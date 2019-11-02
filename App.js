@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { FlatList } from "react-native";
-import { Provider as PaperProvider, Appbar, List } from "react-native-paper";
+import { FlatList, View } from "react-native";
+import {
+  Provider as PaperProvider,
+  Appbar,
+  List,
+  TextInput,
+  Button
+} from "react-native-paper";
+import { createAppContainer } from "react-navigation";
+import { createStackNavigator } from "react-navigation-stack";
 import axios from "axios";
 
 function useTodos() {
@@ -23,21 +31,25 @@ function useTodos() {
       .then(data => fetchTodos());
   }
 
-  // Fetch all todos when app started
-  useEffect(() => {
-    fetchTodos();
-  }, []);
-
-  return { todos, toggleTodo };
+  return { todos, fetchTodos, toggleTodo };
 }
 
-export default function App() {
-  const { todos, toggleTodo } = useTodos();
+function HomeScreen(props) {
+  const { todos, toggleTodo, fetchTodos } = useTodos();
+
+  // Fetch all todos when app started
+  props.navigation.addListener("didFocus", () => {
+    fetchTodos();
+  });
 
   return (
     <PaperProvider>
       <Appbar.Header>
         <Appbar.Content title="Todo App" />
+        <Appbar.Action
+          icon="plus"
+          onPress={() => props.navigation.navigate("CreateTodo")}
+        />
       </Appbar.Header>
       <FlatList
         data={todos}
@@ -60,3 +72,49 @@ export default function App() {
     </PaperProvider>
   );
 }
+
+function CreateTodoScreen(props) {
+  const [todo, setTodo] = useState();
+
+  return (
+    <PaperProvider>
+      <Appbar.Header>
+        <Appbar.Action
+          icon="chevron-left"
+          onPress={() => props.navigation.goBack()}
+        />
+        <Appbar.Content title="New Todo" />
+      </Appbar.Header>
+      <View style={{ margin: 15 }}>
+        <TextInput
+          label="Todo"
+          value={todo}
+          onChangeText={text => setTodo(text)}
+        />
+        <Button
+          style={{ marginTop: 15 }}
+          mode="contained"
+          onPress={() => {
+            axios
+              .post("https://ancient-reaches-80096.herokuapp.com/todos/", {
+                title: todo,
+                completed: false
+              })
+              .then(data => {
+                props.navigation.goBack();
+              });
+          }}
+        >
+          Create todo
+        </Button>
+      </View>
+    </PaperProvider>
+  );
+}
+
+const AppNavigator = createStackNavigator({
+  Home: { screen: HomeScreen, navigationOptions: { header: null } },
+  CreateTodo: { screen: CreateTodoScreen, navigationOptions: { header: null } }
+});
+
+export default createAppContainer(AppNavigator);
