@@ -3,9 +3,10 @@ import { FlatList } from "react-native";
 import { Provider as PaperProvider, Appbar, List } from "react-native-paper";
 import axios from "axios";
 
-export default function App() {
+function useTodos() {
   const [todos, setTodos] = useState([]);
 
+  // Fetch all todos from REST API
   async function fetchTodos() {
     const data = await axios.get(
       "https://ancient-reaches-80096.herokuapp.com/todos/"
@@ -13,9 +14,25 @@ export default function App() {
     setTodos(data.data);
   }
 
+  // Toggle todo completed status
+  function toggleTodo(id, completed) {
+    axios
+      .patch(`https://ancient-reaches-80096.herokuapp.com/todos/${id}/`, {
+        completed: !completed
+      })
+      .then(data => fetchTodos());
+  }
+
+  // Fetch all todos when app started
   useEffect(() => {
     fetchTodos();
   }, []);
+
+  return { todos, toggleTodo };
+}
+
+export default function App() {
+  const { todos, toggleTodo } = useTodos();
 
   return (
     <PaperProvider>
@@ -27,14 +44,7 @@ export default function App() {
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <List.Item
-            onPress={() => {
-              axios
-                .patch(
-                  `https://ancient-reaches-80096.herokuapp.com/todos/${item.id}/`,
-                  { completed: !item.completed }
-                )
-                .then(data => fetchTodos());
-            }}
+            onPress={() => toggleTodo(item.id, item.completed)}
             title={item.title}
             left={props => (
               <List.Icon
