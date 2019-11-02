@@ -38,6 +38,8 @@ export default function HomeScreen(props) {
         </View>
       ) : (
         <FlatList
+          refreshing={loading}
+          onRefresh={fetchTodos}
           data={todos}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
