@@ -64,6 +64,14 @@ export default function HomeScreen(props) {
               />
               <List.Item
                 style={{ marginLeft: 50 }}
+                left={props => <List.Icon {...props} icon="pencil" />}
+                title="Edit"
+                onPress={() => {
+                  props.navigation.navigate("TodoEditScreen", { item });
+                }}
+              />
+              <List.Item
+                style={{ marginLeft: 50 }}
                 left={props => <List.Icon {...props} icon="information" />}
                 title="Detail"
                 onPress={() => {
