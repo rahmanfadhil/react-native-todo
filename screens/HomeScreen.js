@@ -43,19 +43,7 @@ export default function HomeScreen(props) {
           data={todos}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
-            <List.Item
-              onLongPress={() => {
-                Alert.alert(
-                  "Delete todo",
-                  "Are you sure you want to delete this todo?",
-                  [
-                    { text: "Cancel", style: "cancel" },
-                    { text: "OK", onPress: () => deleteTodo(item.id) }
-                  ],
-                  { cancelable: false }
-                );
-              }}
-              onPress={() => toggleTodo(item.id, item.completed)}
+            <List.Accordion
               title={item.title}
               left={props => (
                 <List.Icon
@@ -67,7 +55,28 @@ export default function HomeScreen(props) {
                   }
                 />
               )}
-            />
+            >
+              <List.Item
+                style={{ marginLeft: 50 }}
+                left={props => <List.Icon {...props} icon="check" />}
+                title="Complete"
+                onPress={() => toggleTodo(item.id, item.completed)}
+              />
+              <List.Item
+                style={{ marginLeft: 50 }}
+                left={props => <List.Icon {...props} icon="information" />}
+                title="Detail"
+                onPress={() => {
+                  props.navigation.navigate("TodoDetailScreen", { item });
+                }}
+              />
+              <List.Item
+                style={{ marginLeft: 50 }}
+                left={props => <List.Icon {...props} icon="delete" />}
+                title="Delete"
+                onPress={() => deleteTodo(item.id)}
+              />
+            </List.Accordion>
           )}
         />
       )}
