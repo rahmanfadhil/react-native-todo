@@ -2,42 +2,23 @@ import React, { useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { Provider as PaperProvider, Appbar, List } from "react-native-paper";
 
-const todo_list = [
-  {
-    id: 1,
-    title: "Learn Django",
-    completed: false
-  },
-  {
-    id: 2,
-    title: "Learn React Native",
-    completed: false
-  },
-  {
-    id: 3,
-    title: "Learn VueJS",
-    completed: false
-  },
-  {
-    id: 4,
-    title: "Learn React",
-    completed: true
-  },
-  {
-    id: 5,
-    title: "Learn Angular",
-    completed: true
-  }
-];
-
 export default function App() {
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    fetch("https://ancient-reaches-80096.herokuapp.com/todos/")
+      .then(response => response.json())
+      .then(data => setTodos(data));
+  }, []);
+
   return (
     <PaperProvider>
       <Appbar.Header>
         <Appbar.Content title="Todo App" />
       </Appbar.Header>
       <FlatList
-        data={todo_list}
+        data={todos}
+        keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <List.Item
             onPress={() => {
